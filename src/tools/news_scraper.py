@@ -93,12 +93,14 @@ NEWS_SITES = [
 @tool
 def fetch_news() -> str:
     """
-    从全球多个权威新闻网站抓取今日头条新闻
+    从全球多个权威新闻网站抓取最新新闻（最近3天）
     
     抓取范围（覆盖国内外）：
     - 科技：36氪、IT之家、TechCrunch、The Verge
     - 经济：华尔街见闻、财联社、彭博社、路透社、华尔街日报、金融时报
     - 政治/社会：澎湃新闻、BBC新闻、CNN、纽约时报
+    
+    注意：由于部分国际媒体在中文搜索服务中的索引有限，实际获取到的新闻来源可能有所差异
     
     返回格式：
     JSON格式的新闻列表，每个新闻包含标题、链接、来源和类别
@@ -109,32 +111,37 @@ def fetch_news() -> str:
     # 获取今天的日期
     today = datetime.now().strftime("%Y-%m-%d")
     
-    # 为每个网站搜索最新新闻
+    # 为每个媒体搜索最新新闻
     for site in NEWS_SITES:
         try:
             ctx = new_context(method="search.web")
             client = SearchClient(ctx=ctx)
             
-            # 搜索该网站的最新新闻，使用今天日期作为关键词
-            query = f"site:{site['url']} {today}"
+            # 使用媒体名称作为搜索关键词
+            query = f"{site['name']} 最新消息"
             response = client.search(
                 query=query,
                 search_type="web",
                 count=8,
-                time_range="1d",  # 只搜索最近1天的内容
+                time_range="3d",  # 搜索最近3天的内容
                 need_summary=False
             )
             
             if response.web_items:
                 for item in response.web_items:
-                    news_item = {
-                        'title': item.title,
-                        'url': item.url,
-                        'source': site['name'],
-                        'category': site['category'],
-                        'snippet': item.snippet
-                    }
-                    all_news.append(news_item)
+                    # 严格过滤：只接受来自目标媒体官方域名的新闻
+                    item_url = item.url if item.url else ""
+                    
+                    # 检查URL是否包含目标媒体的域名
+                    if site['url'] in item_url:
+                        news_item = {
+                            'title': item.title,
+                            'url': item_url,
+                            'source': site['name'],
+                            'category': site['category'],
+                            'snippet': item.snippet if item.snippet else ""
+                        }
+                        all_news.append(news_item)
             else:
                 errors.append(f"{site['name']}: 未找到今日新闻")
                 
