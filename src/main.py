@@ -11,6 +11,7 @@ import uvicorn
 import time
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.staticfiles import StaticFiles
 from langchain_core.runnables import RunnableConfig
 from langgraph.graph import StateGraph, END
 from langgraph.graph.state import CompiledStateGraph
@@ -351,8 +352,27 @@ class GraphService:
 service = GraphService()
 app = FastAPI()
 
+# 挂载静态文件目录
+import os
+workspace_path = os.getenv("COZE_WORKSPACE_PATH", ".")
+static_dir = os.path.join(workspace_path, "web")
+if os.path.exists(static_dir):
+    app.mount("/static", StaticFiles(directory=static_dir), name="static")
+
 # OpenAI 兼容接口处理器
 openai_handler = OpenAIChatHandler(service)
+
+
+@app.get("/")
+async def root():
+    """根路由，重定向到Web界面"""
+    import os
+    workspace_path = os.getenv("COZE_WORKSPACE_PATH", ".")
+    web_dir = os.path.join(workspace_path, "web", "index.html")
+    if os.path.exists(web_dir):
+        from fastapi.responses import FileResponse
+        return FileResponse(web_dir)
+    return {"message": "新闻早报助手API服务运行中", "docs": "/docs"}
 
 
 @app.post("/run")

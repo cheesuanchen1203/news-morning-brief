@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  news-bot:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - COZE_WORKSPACE_PATH=/app
+      - COZE_WORKLOAD_IDENTITY_API_KEY=${COZE_WORKLOAD_IDENTITY_API_KEY}
+      - COZE_INTEGRATION_MODEL_BASE_URL=${COZE_INTEGRATION_MODEL_BASE_URL}
+    restart: unless-stopped
+    volumes:
+      - ./logs:/app/logs
