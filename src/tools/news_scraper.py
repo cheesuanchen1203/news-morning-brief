@@ -11,6 +11,7 @@ import json
 
 # 新闻网站配置
 NEWS_SITES = [
+    # 国内科技
     {
         "name": "36氪",
         "url": "36kr.com",
@@ -21,6 +22,18 @@ NEWS_SITES = [
         "url": "ithome.com",
         "category": "科技"
     },
+    # 国际科技
+    {
+        "name": "TechCrunch",
+        "url": "techcrunch.com",
+        "category": "科技"
+    },
+    {
+        "name": "The Verge",
+        "url": "theverge.com",
+        "category": "科技"
+    },
+    # 国内经济
     {
         "name": "华尔街见闻",
         "url": "wallstreetcn.com",
@@ -31,9 +44,47 @@ NEWS_SITES = [
         "url": "cls.cn",
         "category": "经济"
     },
+    # 国际经济
+    {
+        "name": "彭博社",
+        "url": "bloomberg.com",
+        "category": "经济"
+    },
+    {
+        "name": "路透社",
+        "url": "reuters.com",
+        "category": "经济"
+    },
+    {
+        "name": "华尔街日报",
+        "url": "wsj.com",
+        "category": "经济"
+    },
+    {
+        "name": "金融时报",
+        "url": "ft.com",
+        "category": "经济"
+    },
+    # 国内政治/社会
     {
         "name": "澎湃新闻",
         "url": "thepaper.cn",
+        "category": "政治/社会"
+    },
+    # 国际政治/社会
+    {
+        "name": "BBC新闻",
+        "url": "bbc.com",
+        "category": "政治/社会"
+    },
+    {
+        "name": "CNN",
+        "url": "cnn.com",
+        "category": "政治/社会"
+    },
+    {
+        "name": "纽约时报",
+        "url": "nytimes.com",
         "category": "政治/社会"
     }
 ]
@@ -42,12 +93,12 @@ NEWS_SITES = [
 @tool
 def fetch_news() -> str:
     """
-    从多个新闻网站抓取今日头条新闻
+    从全球多个权威新闻网站抓取今日头条新闻
     
-    抓取范围：
-    - 科技：36氪、IT之家
-    - 经济：华尔街见闻、财联社
-    - 政治/社会：澎湃新闻
+    抓取范围（覆盖国内外）：
+    - 科技：36氪、IT之家、TechCrunch、The Verge
+    - 经济：华尔街见闻、财联社、彭博社、路透社、华尔街日报、金融时报
+    - 政治/社会：澎湃新闻、BBC新闻、CNN、纽约时报
     
     返回格式：
     JSON格式的新闻列表，每个新闻包含标题、链接、来源和类别
